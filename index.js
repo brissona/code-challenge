@@ -45,7 +45,7 @@ readInput((data) => {
   inputArray.forEach((element) => {
     const word = element;
     const checkedLetters = [];
-    const letters = element.split('');
+    const letters = word.split('');
 
     // Loop through each letter in current word.
     letters.forEach((letter) => {
