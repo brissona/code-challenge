@@ -15,65 +15,53 @@
  */
 
 const fs = require('fs');
-const args = process.argv.slice(2);
 
 /**
- * readInput accepts callback function.
- * Tries to invoke and execute the function passed.
+ * readInput function accepts callback function.
  * If an error is encountered it's caught and the error message is output.
+ * callbackFn is invoked with data from file if err not encountered.
  */
 
 function readInput(callbackFn) {
-  fs.readFile(args[0], 'utf8', (err, data) => {
-    try {
-      callbackFn(err, data);
-    } catch(e) {
-      console.log(e.message);
+  const [ , , inputFile ] = process.argv;
+
+  fs.readFile(inputFile, 'utf8', (err, data) => {
+    if (err) {
+      console.log(err.message);
+      return;
     }
+
+    callbackFn(data);
   });
 }
 
-readInput((err, data) => {
-  // Throw error if there is one. Triggers catch.
-  if (err) throw new Error(err);
-
+readInput((data) => {
   const input = data;
   const inputArray = input.trim().split(/\s/);
   let output;
   let recurrences = 0;
 
-  /**
-   * loop through each word
-   * letters is an array of each letter in current word that will be looped through.
-   */
-
+  // Loop through each word in inputArray
   inputArray.forEach((element) => {
+    const word = element;
     const checkedLetters = [];
-    // Remove non-word characters
-    const word = element.split(/\W/).join('');
-    const letters = word.split('');
+    const letters = element.split('');
 
-    /**
-    * letters.forEach loops through each letter in current word.
-    * matches is how many matches there are in the current word the current letter.
-    * Set value of mostRepeatedLetterCount if matches exceeds that current value.
-    * Set output to the word that is currently being iterated.
-    */
-
+    // Loop through each letter in current word.
     letters.forEach((letter) => {
       /**
-      * If word character and not in checkedLetters array
-      * get matches and push to checkedLetters array
+      * Check if letter is a word character (not punctuation) and not already checked
+      * get letter matches in the word and push letter to checkedLetters array
       */
 
-      if (/\w/.test(letter) && checkedLetters.indexOf(letter) === -1) {
-        const matches = word.match(new RegExp(letter, 'gi'), '').length;
+      if (/\w/.test(letter) && !checkedLetters.includes(letter)) {
+        const matches = word.match(RegExp(letter, 'gi')).length;
 
         checkedLetters.push(letter);
 
         /**
-        * If the current letter matches exceeds the number of reccurrences 
-        * update recurrences and output with letter matches and word to output
+        * If the current letter matches exceeds the number of reccurrences
+        * update recurrences with matches and output with current word.
         */
 
         if (matches > recurrences) {
